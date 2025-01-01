@@ -3,6 +3,8 @@ import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 
+### DATA
+
 transforms = transforms.Compose([transforms.Resize((224, 224)),
                                  transforms.ToTensor(),
                                 ])
