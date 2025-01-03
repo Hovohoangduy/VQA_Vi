@@ -5,7 +5,9 @@ from model.features_extraction import ImageEmbedding, QuesEmbedding, AnsEmbeddin
 from model.sans import StackAttention
 from model.decoder_model import Decoder
 from configs.config import Config
+from configs.arg_parser import get_args
 
+args = get_args()
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 class VQAModel(nn.Module):
@@ -15,7 +17,7 @@ class VQAModel(nn.Module):
                  num_att_layers=1, mode='train'):
         super(VQAModel, self).__init__()
         self.mode = mode
-        self.image_model = ImageEmbedding(output_size=output_size, mode='train').to(device)
+        self.image_model = ImageEmbedding().to(device)
         self.ques_model = QuesEmbedding(output_size=output_size).to(device)
         self.ans_model = AnsEmbedding().to(device)
         
@@ -35,9 +37,9 @@ class VQAModel(nn.Module):
                 mode, max_len=Config.MAX_LEN_ANS):
         image_embeddings, att_ids = self.image_model(images.to(device), image_ids=anno_ids)
         if mode == 'train':
-            image_embedds = image_embeddings.reshape(Config.TRAIN_BATCH_SIZE, 768, -1).permute(0, 2, 1)
+            image_embedds = image_embeddings.reshape(args.batch_size, 768, -1).permute(0, 2, 1)
         else:
-            image_embedds = image_embeddings.reshape(Config.VAL_BATCH_SIZE, 768, -1).permute(0, 2, 1)
+            image_embedds = image_embeddings.reshape(args.batch_size, 768, -1).permute(0, 2, 1)
         
         ques_embeddings = self.ques_model(questions)
         ques_embedds = ques_embeddings.unsqueeze(1)
