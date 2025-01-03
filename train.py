@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -14,7 +15,7 @@ args = get_args()
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 def train(model, train_loader, num_epochs, optimizer, scheduler, criterion, vocab_swap, device):
-    print_every = 10
+    print_every = 2000
     
     losses = []
     em_scores = []
@@ -120,4 +121,16 @@ if __name__=="__main__":
         num_training_steps=int(len(train_loader) * args.epochs)
     )
     losses, em_scores, f1_scores = train(model, train_loader, num_epochs, optimizer, scheduler, criterion, vocab_swap, device)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(em_scores, label='EM', marker='o')
+    plt.plot(f1_scores, label='F1_SCORE', marker='o')
+    plt.title('Evaluation Metrics')
+    plt.xlabel('Epochs')
+    plt.ylabel('Score')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('evaluation_metrics_plot.png')
+
     torch.save(model.state_dict(), args.model_path + "/" + 'vi_text.pt')
