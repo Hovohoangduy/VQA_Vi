@@ -101,6 +101,7 @@ def train(model, train_loader, num_epochs, optimizer, scheduler, criterion, voca
         print(f"Epoch [{epoch + 1}/{num_epochs}]")
         print(f"Average Exact Match (EM): {avg_em:.4f}")
         print(f"Average F1 Score: {avg_f1:.4f}")
+        print("\n")
     
     return losses, em_scores, f1_scores
 
