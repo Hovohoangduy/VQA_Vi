@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from model.features_extraction import ImageEmbedding, QuesEmbedding, AnsEmbedding
 from model.sans import StackAttention
-from decoder_model import Decoder
+from model.decoder_model import Decoder
 from configs.config import Config
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
