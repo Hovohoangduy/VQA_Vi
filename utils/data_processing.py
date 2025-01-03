@@ -1,35 +1,27 @@
-from PIL import Image
-import torchvision.transforms as transforms
-from torch.utils.data import Dataset, DataLoader
 import pandas as pd
+from underthesea import word_tokenize, text_normalize
+from utils.arg_parser import get_args
 
-### DATA
+def process_dataframe(df):
+    df['quesion'] = [word_tokenize(text_normalize(x), format='text') for x in df['question']]
+    df['answer'] = [word_tokenize(text_normalize(str(x)), format='text') for x in df['answer']]
+    return df
 
-transforms = transforms.Compose([transforms.Resize((224, 224)),
-                                 transforms.ToTensor(),
-                                ])
+def preprocess_data(args):
+    train_csv_path = args.train_csv_path
+    test_csv_path = args.test_csv_path
+    dev_csv_path = args.dev_csv_path
+    # Load data
+    df_train = pd.read_csv(train_csv_path)
+    df_dev = pd.read_csv(dev_csv_path)
+    df_test = pd.read_csv(test_csv_path)
+    # Preprocess data
+    df_train = process_dataframe(df_train)
+    df_dev = process_dataframe(df_dev)
+    return df_train, df_dev, df_test
 
-class VLSP_Dataset(Dataset):
-    def __init__(self, dataframe, transform=None):
-        self.data = dataframe
-        self.transform = transform
+if __name__=="__main__":
+    args = get_args()
 
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        anno_id, image, question, answer = self.data.iloc[idx]
-        image_path = "/kaggle/working/data/" + image
-        image = Image.open(image_path).convert('RGB')
-
-        if self.transform:
-            image = self.transform(image)
-
-        return anno_id, image, question, answer
-    
-
-df_train = pd.read_csv("/Users/duyhoang/Documents/Research/VQA/VQA_Vi/csv/ViTextVQA_train.csv")
-
-train_vlsp_dataset = VLSP_Dataset(df_train, transform=transforms)
-print(train_vlsp_dataset[0])
-print(len(train_vlsp_dataset))
+    df_train, df_dev, df_test = preprocess_data(args)
+    print(df_train.head())
