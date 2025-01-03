@@ -11,6 +11,8 @@ from utils.data_processing import preprocess_data
 from utils.ViTextVQA_dataset import ViTextVQA_Dataset
 from model.vqa_model import VQAModel
 
+### Train model
+
 args = get_args()
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
