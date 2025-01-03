@@ -4,9 +4,9 @@ from PIL import Image
 import torchvision.transforms as transforms
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset, DataLoader
-from config import Config
-from arg_parser import get_args
-from data_processing import preprocess_data
+from configs.config import Config
+from configs.arg_parser import get_args
+from utils.data_processing import preprocess_data
 
 args = get_args()
 tokenizer = AutoTokenizer.from_pretrained(Config.textmodel_dir)

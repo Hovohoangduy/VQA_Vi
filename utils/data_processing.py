@@ -1,6 +1,7 @@
 import pandas as pd
 from underthesea import word_tokenize, text_normalize
-from utils.arg_parser import get_args
+
+from configs.arg_parser import get_args
 
 def process_dataframe(df):
     df['quesion'] = [word_tokenize(text_normalize(x), format='text') for x in df['question']]

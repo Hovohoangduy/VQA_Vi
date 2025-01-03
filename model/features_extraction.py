@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 from transformers import AutoModel, AutoTokenizer, AutoImageProcessor, DeiTModel
-from config import Config
-from utils.arg_parser import get_args
+from configs.config import Config
+from configs.arg_parser import get_args
 from utils.data_processing import preprocess_data
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
