@@ -14,7 +14,7 @@ class VQAModel(nn.Module):
 
     def __init__(self, vocab_size=64001, output_size=768, d_model=768, 
                  num_heads=4, ffn_hidden=2048, drop_prob=0.1, num_layers=4, 
-                 num_att_layers=4, mode='train'):
+                 num_att_layers=2, mode='train'):
         super(VQAModel, self).__init__()
         self.mode = mode
         self.image_model = ImageEmbedding().to(device)
