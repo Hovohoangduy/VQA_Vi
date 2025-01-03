@@ -1,6 +1,8 @@
 import os
+import torchvision.transforms as transforms
 
 class Config:
+    lr = 0.00001
     text_model = '/kaggle/input/huggingface-bert-variants/bert-base-uncased/bert-base-uncased'
 #     image_model = 'google/vit-base-patch16-224-in21k'
     image_model = 'facebook/deit-base-distilled-patch16-224'
@@ -14,3 +16,6 @@ class Config:
     MAX_LEN_QUES = 28
     MAX_LEN_ANS = 38
     NUM_WORKERS = os.cpu_count()
+    transforms = transforms.Compose([transforms.Resize((224, 224)),
+                                    transforms.ToTensor(),
+                                    ])

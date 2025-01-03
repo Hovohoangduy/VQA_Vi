@@ -16,9 +16,12 @@ def preprocess_data(args):
     df_train = pd.read_csv(train_csv_path)
     df_dev = pd.read_csv(dev_csv_path)
     df_test = pd.read_csv(test_csv_path)
+    
     # Preprocess data
+
     df_train = process_dataframe(df_train)
     df_dev = process_dataframe(df_dev)
+
     return df_train, df_dev, df_test
 
 if __name__=="__main__":

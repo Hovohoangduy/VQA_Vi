@@ -1,10 +1,13 @@
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
 from transformers import AutoModel, AutoTokenizer, AutoImageProcessor, DeiTModel
 from configs.config import Config
 from configs.arg_parser import get_args
 from utils.data_processing import preprocess_data
+from utils.ViTextVQA_dataset import ViTextVQA_Dataset
 
+args = get_args()
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 ### Image features extraction model
@@ -51,3 +54,34 @@ class AnsEmbedding(nn.Module):
         tokenized_input = self.tokenizer(ans, return_tensors='pt', padding='max_length', max_length=Config.MAX_LEN_ANS, truncation=True, return_attention_mask=False)
         ans = self.phobert_embed(**tokenized_input.to(device))
         return tokenized_input['input_ids'], ans
+    
+
+if __name__=="__main__":
+    df_train, _, _ = preprocess_data(args)
+    train_vlsp_dataset = ViTextVQA_Dataset(df_train, transform=Config.transforms)
+    train_loader = DataLoader(train_vlsp_dataset, batch_size=args.batch_size, shuffle=True)
+
+    image_model = ImageEmbedding().to(device)
+    ques_model = QuesEmbedding(output_size=768).to(device)
+    ans_model = AnsEmbedding()
+
+    for batch in train_loader:
+        anno_ids, images, questions, answers = batch
+        if torch.cuda.is_available():
+            images = images.cuda()
+            questions = questions
+            anno_ids = anno_ids
+            answers = answers
+        
+        with torch.no_grad():
+            image_embeddings, att_ids = image_model(images, image_ids=anno_ids)
+            ques_embeddings = ques_model(questions)
+            ans_vocab, ans_embedds = ans_model(answers)
+        break    
+
+    image_embeddings = image_embeddings.reshape(args.batch_size, 768, -1).permute(0, 2, 1)
+    ques_embeddings = ques_embeddings.unsqueeze(1)
+    print("image embedding size: ", image_embeddings.size())
+    print("question embedding size ", ques_embeddings.size())
+    print("answer vocab size: ", ans_vocab.size())
+    print("answer embedding size: ", ans_embedds.size())

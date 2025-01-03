@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-import torchvision.transforms as transforms
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset, DataLoader
 from configs.config import Config
@@ -11,10 +10,6 @@ from utils.data_processing import preprocess_data
 args = get_args()
 tokenizer = AutoTokenizer.from_pretrained(Config.textmodel_dir)
 vocab = tokenizer.get_vocab()
-
-transforms = transforms.Compose([transforms.Resize((224, 224)),
-                                 transforms.ToTensor(),
-                                ])
 
 class ViTextVQA_Dataset(Dataset):
     def __init__(self, dataframe, transform=None):
@@ -36,7 +31,7 @@ class ViTextVQA_Dataset(Dataset):
             raise ValueError(f"Missing expected column: {e}")
 
 
-        image_path = args.img_path + image_id
+        image_path = args.img_path + "/" + image_id
 
         try:
             image = Image.open(image_path).convert('RGB')
@@ -50,7 +45,7 @@ class ViTextVQA_Dataset(Dataset):
 if __name__=="__main__":
     ### load and processing data
     df_train, _, _ = preprocess_data(args)
-    train_vlsp_dataset = ViTextVQA_Dataset(df_train, transform=transforms)
+    train_vlsp_dataset = ViTextVQA_Dataset(df_train, transform=Config.transforms)
 
     ### Show example datasets
     random_indices = np.random.choice(len(train_vlsp_dataset), 3)
@@ -67,3 +62,4 @@ if __name__=="__main__":
         plt.show()
 
     train_loader = DataLoader(train_vlsp_dataset, batch_size=args.batch_size, shuffle=True)
+    print(len(train_loader))
