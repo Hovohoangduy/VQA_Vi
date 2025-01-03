@@ -13,8 +13,8 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 class VQAModel(nn.Module):
 
     def __init__(self, vocab_size=64001, output_size=768, d_model=768, 
-                 num_heads=4, ffn_hidden=2048, drop_prob=0.1, num_layers=5, 
-                 num_att_layers=1, mode='train'):
+                 num_heads=4, ffn_hidden=2048, drop_prob=0.1, num_layers=4, 
+                 num_att_layers=4, mode='train'):
         super(VQAModel, self).__init__()
         self.mode = mode
         self.image_model = ImageEmbedding().to(device)
@@ -47,7 +47,6 @@ class VQAModel(nn.Module):
         for att_layer in self.san_model:
             att_embedds = att_layer(image_embedds.to(device), ques_embedds.to(device))
         
-        #START DECODER
         ans_vocab, ans_embedds = self.ans_model(answers)
         
         x = ans_embedds # 16 * 48 * 768
@@ -59,7 +58,6 @@ class VQAModel(nn.Module):
             mask = torch.triu(mask, diagonal=1).to(device)
         
             out = self.decoder(x, y, mask).to(device)
-        #END DECODER
 
         output_logits = self.mlp(out)
         return output_logits, ans_vocab
