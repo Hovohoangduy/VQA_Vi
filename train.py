@@ -14,7 +14,7 @@ args = get_args()
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 def train(model, train_loader, num_epochs, optimizer, scheduler, criterion, vocab_swap, device):
-    print_every = 2000
+    print_every = 10
     
     losses = []
     em_scores = []
