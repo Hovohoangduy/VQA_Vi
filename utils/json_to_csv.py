@@ -1,9 +1,12 @@
 import json
 import os
 import pandas as pd
+from configs.arg_parser import get_args
 
-input_dir = '/Users/duyhoang/Documents/Research/VQA/VQA_Vi/json'
-output_dir = '/Users/duyhoang/Documents/Research/VQA/VQA_Vi/csv'
+args = get_args()
+
+input_dir = args.json_folder_path
+output_dir = args.csv_folder_path
 
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
